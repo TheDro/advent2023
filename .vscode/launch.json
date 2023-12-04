@@ -8,7 +8,7 @@
             "type": "OctaveDebugger",
             "request": "launch",
             "name": "Execute selected file.",
-            "program": "day01.m",
+            "program": "${file}",
             "octave": "octave-cli",
             "sourceFolder": "${workspaceFolder}"
         }
