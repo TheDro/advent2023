@@ -1,6 +1,6 @@
 data = strsplit(fileread('day01.test'), "\n");
-data = strsplit(fileread('day01b.test'), "\n")
-data = strsplit(fileread('day01.data'), "\n");
+% data = strsplit(fileread('day01b.test'), "\n")
+% data = strsplit(fileread('day01.data'), "\n");
 
 function result = getCodes(data)
   data1 = {};
