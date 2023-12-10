@@ -1,36 +1,5 @@
 local p = {}
-local partTablesContent = mw.title.new("Template:PartTables/Tables"):getContent()
-
 local getArgs = require('Module:Arguments').getArgs
-
-function escape(name)
-	return name:gsub("-","--")
-end
-
-function p.whatever(frame)
-	local args = getArgs(frame)
-	local name = args[1] or "nothing"
-	
-	local what = frame:getParent().args['what'] or "nothing"
-	return "Name = "..name..", What = "..what
-end
-
-function p.getTable(frame)
-	local name = escape(frame.args[1])
-	local regex = '#'..name..'.-{|.-|}'
-	local partTableWithTag = partTablesContent:match(regex)
-	local partTable = partTableWithTag:match('{|.-|}')
-	return frame:preprocess(partTable)
-end
-
-function p.getTableContent(frame)
-	local name = escape(frame.args[1])
-	local regex = '{| id="'..name..'.-|}'
-	local partTable = partTablesContent:match(regex)
-	return "<nowiki>"..partTable.."</nowiki>"
-end
-
-
 
 -- Refactor this to add metadata to each tier
 local technologyTiers = {
@@ -454,7 +423,6 @@ function p.getTreeTable(frame)
     local args = getArgs(frame)
     local iTier = tonumber(args[1])
     local tier = technologyTiers[iTier]
-
     return p.objectsToTable(tier.research)
 end
 
@@ -462,14 +430,19 @@ function p.getTreeTableContent(frame)
 	return "<pre>"..p.getTreeTable(frame).."</pre>"
 end
 
--- columns are optiona
-function p.objectsToTable(objects)
+
+-- columns are optional
+function p.objectsToTable(objects, columns)
     local result = "{| class=\"wikitable\"\n"
   
+    if (columns == null) then
+      columns = getKeys(objects[1])
+    end
+
     -- Add header row
     firstObject = objects[1]
-    for key, value in pairs(firstObject) do
-        result = result .. "! " .. key .. "\n"
+    for i, column in pairs(columns) do
+        result = result .. "! " .. column .. "\n"
     end
 
     -- Iterate over the array elements
@@ -486,6 +459,15 @@ function p.objectsToTable(objects)
     
     return result
 end
+
+function getKeys(object)
+    local keys = {}
+    for key, value in pairs(object) do
+        table.insert(keys, key)
+    end
+    return keys
+end
+
 
 
 return p
