@@ -127,7 +127,7 @@ function p.test()
 !cost
 !two 
 lines
-!exclamation!
+!exclamation
 |-
 |hey
 |1
@@ -148,7 +148,12 @@ lines
 |
 |}
     ]]
-    return "<pre>".. p.tableToObjects(inputTable) .."</pre>"
+    
+    local bleh = {}
+	bleh["what"] = "else"
+	-- return "<pre>".. printObject(bleh) .. "</pre>"
+    return "<pre>".. printObject(p.tableToObjects(inputTable)[1]) .."</pre>"
+    -- return "<pre>" .. p.tableToObjects(inputTable) .. "</pre>"
 end
 
 function p.tableToObjects(inputTable)
@@ -160,13 +165,37 @@ function p.tableToObjects(inputTable)
     columns = split(header, "\n!")
     rows = split(body, "\n|-")
 
-	return body
+    for i, row in ipairs(rows) do
+        local object = {}
+        local cells = split(row, "\n|")
+        cells = {unpack(cells, 2, #cells)}
+        for i, cell in ipairs(cells) do
+        	local column = columns[i]
+        	if (column == null) then
+        		column = "missing"
+        	end
+            object[column] = cell
+        end
+        table.insert(result, object)
+    end
+
+	return result
+end
+
+function printObject(object) 
+    result = "{\n"
+    for key, value in pairs(object) do
+        result = result .. key .. " = " .. value .. "\n"
+    end
+    result = result .. "}"
+    return result
 end
 
 function split(str, separator)
     local result = {}
     str2 = str .. separator
-    for match in (str2..separator):gmatch("(.-)"..separator) do
+    local safeSeparator = string.gsub(separator, "%-", "%%-")
+    for match in str2:gmatch("(.-)"..safeSeparator) do
         table.insert(result, match)
     end
     return result
