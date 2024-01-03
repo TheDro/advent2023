@@ -148,15 +148,39 @@ lines
 |
 |}
     ]]
-    return p.tableToObjects(inputTable)
+    return "<pre>".. p.tableToObjects(inputTable) .."</pre>"
 end
 
 function p.tableToObjects(inputTable)
     local result = {}
-    for k in inputTable:gmatch("\n!.-") do
-    	table.insert(result, k)
+    local columns = {}
+    local header = inputTable:match("\n!(.-)\n|")
+    local body = inputTable:match("\n|%-(.-)\n|}")
+
+    columns = split(header, "\n!")
+    rows = split(body, "\n|-")
+
+	return body
+end
+
+function split(str, separator)
+    local result = {}
+    str2 = str .. separator
+    for match in (str2..separator):gmatch("(.-)"..separator) do
+        table.insert(result, match)
     end
-	return result
+    return result
+end
+
+function join(array, separator)
+    local result = ""
+    for i, v in ipairs(array) do
+        result = result .. v
+        if i < #array then
+            result = result .. separator
+        end
+    end
+    return result
 end
 
 function getKeys(object)
